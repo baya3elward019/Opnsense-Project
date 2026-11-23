@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>تجزئة الشبكة وكشف التسلل باستخدام OPNsense</title>
+<title>تجزئة الشبكة وكشف ومنع التسلل باستخدام OPNsense</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -353,7 +353,7 @@ p,li{font-size:23px;line-height:1.75}
 <section class="slide cover" data-title="الغلاف">
   <div class="txt">
     <div class="uni rv"><img data-i="building" alt=""><div>جامعة طرابلس الأهلية<br>قسم تقنية المعلومات</div></div>
-    <h1 class="rv">تجزئة الشبكة وضبط الجدار الناري وكشف التسلل<span>مختبر عملي معزول باستخدام <span class="en" style="display:inline;font-size:inherit;margin:0;color:var(--text);font-weight:600">OPNsense</span></span></h1>
+    <h1 class="rv">تجزئة الشبكة وضبط الجدار الناري وكشف ومنع التسلل<span>مختبر عملي معزول باستخدام <span class="en" style="display:inline;font-size:inherit;margin:0;color:var(--text);font-weight:600">OPNsense</span></span></h1>
     <dl class="meta rv">
       <dt>المادة</dt><dd>أمن المعلومات والشبكات وبروتوكولاتها <span class="m">ITCYS364</span></dd>
       <dt>إعداد الطالب</dt><dd>عبد الرحمن محمد زكريا <span class="m muted">2011980</span></dd>
@@ -376,9 +376,9 @@ p,li{font-size:23px;line-height:1.75}
 <section class="slide spread" data-title="ما هو المشروع">
   <header class="sh rv"><span class="orb" style="--k:var(--opt)"><img data-i="puzzle" alt=""></span><div><h2>ما هو المشروع؟</h2><p class="lead">نسخة مصغّرة من شبكة مؤسسة، مبنية بالكامل على أجهزة افتراضية: الشبكة مقسّمة إلى مناطق، يحرسها جدار ناري، وتراقبها أنظمة لكشف التسلل ومنعه.</p></div></header>
   <div class="ingr">
-    <div class="panel rv" style="--k:var(--opt)"><span class="orb sm"><img data-i="desktop" alt=""></span><h3>4 أجهزة افتراضية</h3><p>جدار ناري OPNsense، وجهازا Debian يمثّلان المستخدمين، وجهاز Kali يمثّل المهاجم.</p></div>
-    <div class="panel rv" style="--k:var(--lan)"><span class="orb sm"><img data-i="map" alt=""></span><h3>3 مناطق شبكية</h3><p><span class="m">LAN</span> و<span class="m">OPT1</span> داخليتان، و<span class="m">KALI_NET</span> للمهاجم، إضافة إلى منفذ للإنترنت.</p></div>
-    <div class="panel rv" style="--k:var(--fw)"><span class="orb sm"><img data-i="brick" alt=""></span><h3>سياسة عبور مكتوبة</h3><p>قواعد مرتّبة تحدد بدقة ما يُسمح له بالعبور بين المناطق، وكل منع يُسجَّل.</p></div>
+    <div class="panel rv" style="--k:var(--opt)"><span class="orb sm"><img data-i="desktop" alt=""></span><h3>4 أجهزة افتراضية</h3><p>جدار ناري OPNsense، وجهاز Debian للإدارة وآخر للمستخدمين، وجهاز Kali لمحاكاة الهجمات.</p></div>
+    <div class="panel rv" style="--k:var(--lan)"><span class="orb sm"><img data-i="map" alt=""></span><h3>3 مناطق شبكية</h3><p><span class="m">MGMT_NET</span> للإدارة و<span class="m">USER_NET</span> للمستخدمين، و<span class="m">ATTACK_LAB</span> للاختبارات، إضافة إلى منفذ للإنترنت.</p></div>
+    <div class="panel rv" style="--k:var(--fw)"><span class="orb sm"><img data-i="brick" alt=""></span><h3>سياسة عبور مكتوبة</h3><p>قواعد مرتّبة تحدد العبور المصرّح به بين المناطق، مع تسجيل حالات المنع المفعّل لها Log.</p></div>
     <div class="panel rv" style="--k:var(--kali)"><span class="orb sm"><img data-i="eye" alt=""></span><h3>طبقتان للرصد</h3><p><span class="en">Suricata</span> يكشف الفحص ويمنعه، و<span class="en">OpenCanary</span> مصيدة تسجّل من يحاول الدخول.</p></div>
   </div>
   <div class="why rv"><img data-i="a_zap" alt=""><div><b class="q">السؤال الذي يجيب عنه المشروع</b><p>إذا اختُرق جهاز داخل الشبكة، كيف نمنعه من الوصول إلى بقية الأجهزة؟ وإذا حاول مهاجم الدخول، كيف نعرف ذلك في لحظته؟</p></div></div>
@@ -416,26 +416,27 @@ p,li{font-size:23px;line-height:1.75}
     <div class="col rv" style="flex:1;gap:14px">
       <div class="bene" style="--k:var(--lan)"><span class="orb sm"><img data-i="shield" alt=""></span><div><h3>احتواء الضرر</h3><p>الجهاز المخترق يبقى محصوراً في منطقته (<span class="en">Blast Radius</span> أصغر).</p></div></div>
       <div class="bene" style="--k:var(--fw)"><span class="orb sm"><img data-i="key" alt=""></span><div><h3>تحكّم دقيق</h3><p>نفتح ما يلزم فقط، بين أجهزة محددة وعلى منافذ محددة.</p></div></div>
-      <div class="bene" style="--k:var(--opt)"><span class="orb sm"><img data-i="clipboard" alt=""></span><div><h3>رؤية كاملة</h3><p>كل عبور مرفوض يُسجَّل، فنعرف من حاول ومتى وإلى أين.</p></div></div>
-      <div class="bene" style="--k:var(--kali)"><span class="orb sm"><img data-i="siren" alt=""></span><div><h3>كشف ومنع مبكر</h3><p>الفحص يُرصد ويُسقط قبل أن يصل، ومن يلمس المصيدة يُكشف فوراً.</p></div></div>
-      <div class="bene" style="--k:var(--pass)"><span class="orb sm"><img data-i="testtube" alt=""></span><div><h3>بيئة تجريب آمنة</h3><p>نهاجم ونختبر بحرية، دون أي خطر على شبكة حقيقية ودون تكلفة.</p></div></div>
+      <div class="bene" style="--k:var(--opt)"><span class="orb sm"><img data-i="clipboard" alt=""></span><div><h3>رؤية كاملة</h3><p>تسجيل محاولات المنع المفعّل لها Log يوضح المصدر والوجهة ووقت الحدث.</p></div></div>
+      <div class="bene" style="--k:var(--kali)"><span class="orb sm"><img data-i="siren" alt=""></span><div><h3>كشف ومنع مبكر</h3><p>Suricata يرصد الفحص ثم يمنع التواقيع المحددة في وضع IPS؛ والمصيدة تسجّل المحاولات.</p></div></div>
+      <div class="bene" style="--k:var(--pass)"><span class="orb sm"><img data-i="testtube" alt=""></span><div><h3>بيئة تجريب آمنة</h3><p>نجري اختبارات مصرّح بها داخل مختبر افتراضي معزول عن شبكات الإنتاج.</p></div></div>
     </div>
   </div>
 </section>
 
 <!-- 4 TOPOLOGY SIM -->
 <section class="slide" data-title="بنية المختبر" style="gap:20px">
-  <header class="sh rv"><span class="orb" style="--k:var(--opt)"><img data-i="desktop" alt=""></span><div><h2>بنية المختبر: جرّب حركة المرور بنفسك</h2><p class="lead">أربعة أجهزة افتراضية، وكل حزمة تنتقل بين منطقتين لا بد أن تمر عبر <span class="en">OPNsense</span>.</p></div></header>
+  <header class="sh rv"><span class="orb" style="--k:var(--opt)"><img data-i="desktop" alt=""></span><div><h2>بنية المختبر: جرّب حركة المرور بنفسك</h2><p class="lead">أربعة أجهزة افتراضية، والمرور بين المناطق يخضع لـ <span class="en">OPNsense</span>. الرسم التالي محاكاة تعليمية وليست مراقبة حية.</p></div></header>
   <div class="sim">
     <div class="side rv">
       <div class="btns" id="scen">
-        <button data-s="ssh" style="--k:var(--pass)"><i></i>SSH من LAN إلى OPT1<span class="m">TCP/22</span></button>
-        <button data-s="ping" style="--k:var(--block)"><i></i>Ping من OPT1 إلى LAN<span class="m">ICMP</span></button>
-        <button data-s="web" style="--k:var(--opt)"><i></i>LAN يتصفح الإنترنت<span class="m">TCP/443</span></button>
+        <button data-s="ssh" style="--k:var(--pass)"><i></i>SSH من MGMT_NET إلى USER_NET<span class="m">TCP/22</span></button>
+        <button data-s="sshblock" style="--k:var(--block)"><i></i>SSH من USER_NET إلى MGMT_NET<span class="m">Block/22</span></button>
+        <button data-s="ping" style="--k:var(--block)"><i></i>Ping من USER_NET إلى MGMT_NET<span class="m">ICMP</span></button>
+        <button data-s="web" style="--k:var(--opt)"><i></i>MGMT_NET يتصفح الإنترنت<span class="m">TCP/443</span></button>
         <button data-s="nmap" style="--k:var(--fw)"><i></i>فحص Nmap من Kali<span class="m">IPS</span></button>
-        <button data-s="canary" style="--k:var(--kali)"><i></i>Kali يطرق المصيدة<span class="m">:2222</span></button>
+        <button data-s="canary" style="--k:var(--kali)"><i></i>Kali يصل للمصيدة المصرّح بها<span class="m">:2222</span></button>
       </div>
-      <ol class="log" id="log" aria-live="polite"><li class="hint">اختر سيناريو لترى قرار الجدار الناري لحظة بلحظة.</li></ol>
+      <ol class="log" id="log" aria-live="polite"><li class="hint">محاكاة توضيحية للسياسة؛ ليست سجلات حية من OPNsense.</li></ol>
     </div>
     <div class="rv" style="min-height:0">
       <svg id="topo" viewBox="0 0 820 530" aria-label="مخطط المختبر التفاعلي">
@@ -450,9 +451,9 @@ p,li{font-size:23px;line-height:1.75}
         <text class="ifl" x="232" y="200">em2 · WAN (NAT)</text>
 
         <g id="n-wan" transform="translate(140,100)"><rect class="zone" x="-105" y="-80" width="210" height="160" rx="22" style="fill:var(--muted);fill-opacity:.08;stroke:var(--muted);stroke-opacity:.45;stroke-width:2"/><image data-i="globe" x="-34" y="-72" width="68" height="68"/><text class="t1" y="22">الإنترنت</text><text class="t2" y="46">VMnet8 · NAT</text><text class="t2" y="66">example.org</text></g>
-        <g id="n-lan" transform="translate(680,100)"><rect class="zone" x="-105" y="-80" width="210" height="160" rx="22" style="fill:var(--lan);fill-opacity:.1;stroke:var(--lan);stroke-opacity:.6;stroke-width:2"/><image data-i="desktop" x="-34" y="-72" width="68" height="68"/><text class="t1" y="22">Debian-LAN</text><text class="t2" y="46">10.10.10.10</text><text class="t2" y="66">LAN · VMnet2</text><image id="canary" data-i="honey" x="62" y="-104" width="52" height="52"/></g>
-        <g id="n-opt" transform="translate(680,430)"><rect class="zone" x="-105" y="-80" width="210" height="160" rx="22" style="fill:var(--opt);fill-opacity:.1;stroke:var(--opt);stroke-opacity:.6;stroke-width:2"/><image data-i="desktop" x="-34" y="-72" width="68" height="68"/><text class="t1" y="22">Debian-OPT1</text><text class="t2" y="46">10.10.20.20</text><text class="t2" y="66">OPT1 · VMnet3</text></g>
-        <g id="n-kali" transform="translate(140,430)"><rect class="zone" x="-105" y="-80" width="210" height="160" rx="22" style="fill:var(--kali);fill-opacity:.1;stroke:var(--kali);stroke-opacity:.6;stroke-width:2"/><image data-i="a_ninja" x="-38" y="-78" width="76" height="76"/><text class="t1" y="22">Kali Linux</text><text class="t2" y="46">10.10.30.10</text><text class="t2" y="66">KALI_NET</text></g>
+        <g id="n-lan" transform="translate(680,100)"><rect class="zone" x="-105" y="-80" width="210" height="160" rx="22" style="fill:var(--lan);fill-opacity:.1;stroke:var(--lan);stroke-opacity:.6;stroke-width:2"/><image data-i="desktop" x="-34" y="-72" width="68" height="68"/><text class="t1" y="22">Debian-MGMT</text><text class="t2" y="46">10.10.10.10</text><text class="t2" y="66">MGMT_NET · VMnet2</text><image id="canary" data-i="honey" x="62" y="-104" width="52" height="52"/></g>
+        <g id="n-opt" transform="translate(680,430)"><rect class="zone" x="-105" y="-80" width="210" height="160" rx="22" style="fill:var(--opt);fill-opacity:.1;stroke:var(--opt);stroke-opacity:.6;stroke-width:2"/><image data-i="desktop" x="-34" y="-72" width="68" height="68"/><text class="t1" y="22">Debian-USER</text><text class="t2" y="46">10.10.20.20</text><text class="t2" y="66">USER_NET · VMnet3</text></g>
+        <g id="n-kali" transform="translate(140,430)"><rect class="zone" x="-105" y="-80" width="210" height="160" rx="22" style="fill:var(--kali);fill-opacity:.1;stroke:var(--kali);stroke-opacity:.6;stroke-width:2"/><image data-i="a_ninja" x="-38" y="-78" width="76" height="76"/><text class="t1" y="22">Kali Linux</text><text class="t2" y="46">10.10.30.10</text><text class="t2" y="66">ATTACK_LAB</text></g>
 
         <circle id="fwRing" cx="410" cy="265" r="70"/>
         <g id="n-fw" transform="translate(410,265)"><rect class="zone" x="-88" y="-78" width="176" height="156" rx="26" style="fill:var(--fw);fill-opacity:.14;stroke:var(--fw);stroke-opacity:.8;stroke-width:2.5"/><image data-i="brick" x="-40" y="-72" width="80" height="80"/><image data-i="a_fire" x="8" y="-88" width="50" height="50"/><text class="t1" y="30">OPNsense</text><text class="t2" y="54">LAB-FW01</text><image id="idsEye" data-i="a_zap" x="-96" y="-98" width="46" height="46"/></g>
@@ -473,7 +474,7 @@ p,li{font-size:23px;line-height:1.75}
     <div class="ph" style="--k:var(--fw)"><span class="orb sm"><img data-i="antenna" alt=""></span><b>الخدمات</b><p>تفعيل <span class="en">DHCP</span> و<span class="en">DNS</span> عبر <span class="en">Dnsmasq</span>.</p></div>
     <div class="ph" style="--k:var(--lan)"><span class="orb sm"><img data-i="memo" alt=""></span><b>السياسة</b><p>كتابة قواعد العزل والاستثناءات وترتيبها.</p></div>
     <div class="ph" style="--k:var(--lan)"><span class="orb sm"><img data-i="testtube" alt=""></span><b>التحقق</b><p>اختبار كل قاعدة بـ <span class="m">curl</span> و<span class="m">ping</span> و<span class="m">nc</span> و<span class="m">ssh</span>.</p></div>
-    <div class="ph" style="--k:var(--kali)"><span class="orb sm"><img data-i="a_zap" alt=""></span><b>المنع</b><p>تشغيل <span class="en">Suricata</span> بوضع <span class="en">IPS</span> على <span class="m">KALI_NET</span>.</p></div>
+    <div class="ph" style="--k:var(--kali)"><span class="orb sm"><img data-i="a_zap" alt=""></span><b>المنع</b><p>اختبار <span class="en">Suricata IDS</span> للكشف أولاً، ثم التحويل إلى <span class="en">Netmap IPS</span> على <span class="m">ATTACK_LAB</span>.</p></div>
     <div class="ph" style="--k:var(--kali)"><span class="orb sm"><img data-i="honey" alt=""></span><b>الاستدراج</b><p>نشر <span class="en">OpenCanary</span> ورصد محاولات الدخول.</p></div>
   </div>
   <div class="why rv"><img data-i="bulb" alt=""><div><b class="q">لماذا بهذا الترتيب؟</b><p>كل مرحلة تبني على التي قبلها: لا قواعد بلا واجهات، ولا اختبار بلا عناوين. وتغيير شيء واحد ثم اختباره يعني أن أي مشكلة تظهر سببها آخر خطوة.</p></div></div>
@@ -484,19 +485,19 @@ p,li{font-size:23px;line-height:1.75}
   <header class="sh rv"><span class="orb" style="--k:var(--fw)"><img data-i="brick" alt=""><img class="orb-fx" data-i="a_fire" alt=""></span><div><span class="phase">المراحل 1 إلى 3</span><h2>ثلاث مناطق، وبوابة واحدة في المنتصف</h2></div></header>
   <div class="grid3">
     <div class="panel zcard rv" style="--k:var(--lan)">
-      <div class="hd"><span class="orb sm"><img data-i="desktop" alt=""></span><div><b>LAN</b><small class="m">10.10.10.0/24 · em0</small></div></div>
+      <div class="hd"><span class="orb sm"><img data-i="desktop" alt=""></span><div><b>MGMT_NET</b><small class="m">10.10.10.0/24 · em0</small></div></div>
       <div class="trust">ثقة <i class="f"></i><i class="f"></i><i class="f"></i></div>
-      <p>شبكة داخلية موثوقة، عليها <span class="m">Debian-LAN</span>. منها فقط تُدار واجهة الجدار الناري.</p>
+      <p>شبكة الإدارة والتحكم، عليها <span class="m">Debian-MGMT</span>. يُسمح للإدارة بالوصول المقيّد إلى أجهزة المستخدمين.</p>
       <p class="ex">في الواقع: أجهزة الإدارة وتقنية المعلومات.</p>
     </div>
     <div class="panel zcard rv" style="--k:var(--opt)">
-      <div class="hd"><span class="orb sm"><img data-i="laptop" alt=""></span><div><b>OPT1</b><small class="m">10.10.20.0/24 · em1</small></div></div>
+      <div class="hd"><span class="orb sm"><img data-i="laptop" alt=""></span><div><b>USER_NET</b><small class="m">10.10.20.0/24 · em1</small></div></div>
       <div class="trust">ثقة <i class="f"></i><i class="f"></i><i></i></div>
-      <p>شبكة داخلية ثانية، عليها <span class="m">Debian-OPT1</span>. داخلية، لكنها لا تحتاج أن ترى LAN.</p>
-      <p class="ex">في الواقع: قسم آخر، أو مختبر طلاب.</p>
+      <p>شبكة أجهزة المستخدمين، عليها <span class="m">Debian-USER</span>. يُمنع بدء الاتصال منها تجاه شبكة الإدارة.</p>
+      <p class="ex">في الواقع: أجهزة الموظفين والمستخدمين.</p>
     </div>
     <div class="panel zcard rv" style="--k:var(--kali)">
-      <div class="hd"><span class="orb sm"><img data-i="a_ninja" alt=""></span><div><b>KALI_NET</b><small class="m">10.10.30.0/24 · em3</small></div></div>
+      <div class="hd"><span class="orb sm"><img data-i="a_ninja" alt=""></span><div><b>ATTACK_LAB</b><small class="m">10.10.30.0/24 · em3</small></div></div>
       <div class="trust">ثقة <i></i><i></i><i></i></div>
       <p>منطقة غير موثوقة، عليها <span class="m">Kali</span>، ومنها ننفّذ الفحص ومحاولات الدخول.</p>
       <p class="ex">في الواقع: مهاجم خارجي أو جهاز دخيل.</p>
@@ -510,14 +511,14 @@ p,li{font-size:23px;line-height:1.75}
 
 <!-- 7 DHCP -->
 <section class="slide" data-title="DHCP و DNS">
-  <header class="sh rv"><span class="orb" style="--k:var(--opt)"><img data-i="antenna" alt=""></span><div><span class="phase">المرحلة 4</span><h2>DHCP وDNS: البنية التي لا ننتبه لها حتى تتعطّل</h2><p class="lead">نطاق تلقائي على كل شبكة داخلية: <span class="m">10.10.10.100–200</span> على LAN و<span class="m">10.10.20.100–200</span> على OPT1.</p></div></header>
+  <header class="sh rv"><span class="orb" style="--k:var(--opt)"><img data-i="antenna" alt=""></span><div><span class="phase">المرحلة 4</span><h2>DHCP وDNS: البنية التي لا ننتبه لها حتى تتعطّل</h2><p class="lead">نطاق تلقائي على كل شبكة داخلية: <span class="m">10.10.10.100–200</span> على MGMT_NET و<span class="m">10.10.20.100–200</span> على USER_NET.</p></div></header>
   <div class="row">
     <div class="col grow">
       <div class="panel rv"><h3 style="margin-bottom:6px">ماذا يقدّم DHCP؟</h3><p class="muted">لكل جهاز ينضم إلى الشبكة: عنوان <span class="en">IP</span>، والبوابة الافتراضية (الجدار الناري)، وخادم <span class="en">DNS</span>، دون أي إعداد يدوي.</p></div>
       <div class="why rv"><img data-i="question" alt=""><div><b class="q">ولماذا أعددناه والاختبارات تمت بعناوين ثابتة؟</b><p>الخدمة لأي جهاز جديد ينضم للشبكة. أما الجهازان اللذان تستهدفهما قواعد الجدار الناري فأُعطيا عنوانين ثابتين <span class="m">.10</span> و<span class="m">.20</span>، <b>خارج</b> النطاق الديناميكي عمداً؛ لأن قاعدة مبنية على عنوان قد يتغيّر تفقد معناها. وفي المؤسسات يُحل ذلك بحجز العنوان داخل DHCP (<span class="en">Static Mapping</span>).</p></div></div>
     </div>
     <div class="panel rv" style="flex:1.05">
-      <h3 style="margin-bottom:14px">قصة عطل حقيقي على OPT1</h3>
+      <h3 style="margin-bottom:14px">قصة عطل حقيقي على USER_NET (OPT1 سابقاً)</h3>
       <div class="steps">
         <div class="step" style="--k:var(--block)"><p><b>العَرَض:</b> الجهاز يأخذ عنواناً من <span class="m">169.254.x.x</span>، أي لم يصله أي رد من خادم DHCP.</p></div>
         <div class="step" style="--k:var(--fw)"><p><b>التشخيص:</b> رسائل <span class="en">DHCP Discover</span> تصل إلى <span class="m">em1</span>، ولا يصدر أي <span class="en">Offer</span>.</p></div>
@@ -529,82 +530,82 @@ p,li{font-size:23px;line-height:1.75}
 </section>
 <!-- 8 RULES -->
 <section class="slide" data-title="سياسة الجدار الناري">
-  <header class="sh rv"><span class="orb" style="--k:var(--fw)"><img data-i="memo" alt=""></span><div><span class="phase">المرحلة 5</span><h2>سياسة الجدار الناري: الترتيب يصنع القرار</h2><p class="lead">تُقرأ القواعد من الأعلى إلى الأسفل، وأول قاعدة تطابق الحزمة هي التي تُنفَّذ. هذه قواعد واجهة <span class="m">OPT1</span> النهائية:</p></div></header>
+  <header class="sh rv"><span class="orb" style="--k:var(--fw)"><img data-i="memo" alt=""></span><div><span class="phase">المرحلة 5</span><h2>سياسة الجدار الناري: الإدارة تبدأ الاتصال</h2><p class="lead">السياسة النهائية تعتمد أقل صلاحية: الإدارة تصل لجهاز المستخدم عبر SSH، والمستخدم لا يبدأ اتصالاً نحو الإدارة. تُراجع القواعد حسب واجهة دخول الحزمة وترتيبها.</p></div></header>
   <table class="rules rv">
     <tr><th>#</th><th>القرار</th><th>المصدر</th><th>الوجهة</th><th>المنفذ</th><th>الغرض</th></tr>
-    <tr><td>1</td><td><span class="act p">Pass</span></td><td class="m">OPT1 net</td><td class="m">OPT1 address</td><td class="m">DNS 53</td><td>السماح بالاستعلام عن الأسماء</td></tr>
-    <tr class="key"><td>2</td><td><span class="act p">Pass</span></td><td class="m">10.10.20.20/32</td><td class="m">10.10.10.10/32</td><td class="m">SSH 22</td><td>الاستثناء الوحيد بين الشبكتين</td></tr>
-    <tr class="wall"><td>3</td><td><span class="act b">Block + Log</span></td><td class="m">OPT1 net</td><td class="m">LAN net</td><td class="m">any</td><td>عزل OPT1 عن LAN وتسجيل كل محاولة</td></tr>
-    <tr><td>4</td><td><span class="act p">Pass</span></td><td class="m">OPT1 net</td><td class="m">any</td><td class="m">HTTP 80</td><td>تصفح الإنترنت</td></tr>
-    <tr class="wall"><td>5</td><td><span class="act b">Block</span></td><td class="m">OPT1 net</td><td class="m">OPT1 address</td><td class="m">HTTPS 443</td><td>منع الوصول إلى واجهة إدارة الجدار الناري</td></tr>
-    <tr><td>6</td><td><span class="act p">Pass</span></td><td class="m">OPT1 net</td><td class="m">any</td><td class="m">HTTPS 443</td><td>تصفح الإنترنت الآمن</td></tr>
+    <tr class="key"><td>1</td><td><span class="act p">Pass</span></td><td class="m">10.10.10.10</td><td class="m">10.10.20.20</td><td class="m">TCP/22</td><td>إدارة الجهاز عبر SSH — قاعدة على MGMT_NET</td></tr>
+    <tr class="wall"><td>2</td><td><span class="act b">Block + Log</span></td><td class="m">USER_NET</td><td class="m">MGMT_NET</td><td class="m">any</td><td>منع بدء الاتصالات من المستخدمين إلى الإدارة</td></tr>
+    <tr><td>3</td><td><span class="act p">Pass</span></td><td class="m">USER_NET</td><td class="m">DNS resolver</td><td class="m">DNS 53</td><td>حلّ الأسماء وفق إعداد الخدمة</td></tr>
+    <tr><td>4</td><td><span class="act p">Pass</span></td><td class="m">MGMT/USER</td><td class="m">Internet</td><td class="m">80/443</td><td>وصول مقيّد للويب عبر WAN</td></tr>
+    <tr class="wall"><td>5</td><td><span class="act b">Block</span></td><td class="m">USER_NET</td><td class="m">FW GUI</td><td class="m">TCP/443</td><td>حماية واجهة إدارة OPNsense</td></tr>
+    <tr class="key"><td>6</td><td><span class="act p">Pass</span></td><td class="m">10.10.30.10</td><td class="m">10.10.10.10</td><td class="m">TCP/2222</td><td>استثناء اختبار المصيدة فقط — ATTACK_LAB</td></tr>
   </table>
   <div class="grid2">
-    <div class="why rv"><img data-i="warning" alt=""><div><b class="q">ماذا حدث حين كانت قاعدة المنع أعلى؟</b><p>فشل SSH، وظهر <span class="m">TCP/22</span> محجوباً في <span class="en">Live View</span>. نقل قاعدة السماح (2) فوق قاعدة المنع (3) حلّ المشكلة.</p></div></div>
-    <div class="why rv"><img data-i="memo" alt=""><div><b class="q">لماذا نسجّل المنع؟ ولماذا القاعدة 5؟</b><p>كل محاولة مرفوضة تصبح دليلاً: من حاول، ومتى، وإلى أين. والقاعدة 5 تحصر إدارة الجدار الناري في جهاز واحد على LAN.</p></div></div>
+    <div class="why rv"><img data-i="warning" alt=""><div><b class="q">لماذا صور SSH القديمة تُظهر السماح في الاتجاهين؟</b><p>كانت مرحلة تحقق أولى من عمل الشبكات والخدمة؛ بعدها أُلغي استثناء USER_NET → MGMT_NET لتطبيق سياسة المنع النهائية.</p></div></div>
+    <div class="why rv"><img data-i="memo" alt=""><div><b class="q">مهم عند إثبات السياسة</b><p>الجدول يلخّص السياسة المقصودة، وليس ترتيباً واحداً لقواعد واجهة واحدة. إثبات المنع يحتاج سجل Block مطابقاً ومحاولة اتصال من الجهاز.</p></div></div>
   </div>
 </section>
 <!-- 9 SSH -->
 <section class="slide" data-title="تقييد SSH">
-  <header class="sh rv"><span class="orb" style="--k:var(--fw)"><img data-i="key" alt=""></span><div><span class="phase">المرحلة 5</span><h2>لماذا قيّدنا SSH بهذه الدقة؟</h2><p class="lead">SSH يعني تحكّماً كاملاً بالجهاز من بعيد؛ لذلك فُتح بين جهازين بعينهما، وعلى منفذ واحد فقط. هذا هو مبدأ أقل الصلاحيات (<span class="en">Least Privilege</span>).</p></div></header>
+  <header class="sh rv"><span class="orb" style="--k:var(--fw)"><img data-i="key" alt=""></span><div><span class="phase">المرحلتان: اختبار ثم تطبيق السياسة</span><h2>SSH: لماذا نجح في الاتجاهين ثم مُنع أحدهما؟</h2><p class="lead">في البداية سمحت باتصال SSH بين جهازَي Debian للتأكد من التوجيه والخدمة. ثم أبقيت اتصال الإدارة إلى المستخدم فقط، ومنعت بدء الاتصال في الاتجاه العكسي.</p></div></header>
   <div class="anat rv">
-    <div class="part" style="border-top:4px solid var(--opt)"><small>من؟</small><b>10.10.20.20/32</b><span>جهاز واحد، لا الشبكة كاملة</span></div>
+    <div class="part" style="border-top:4px solid var(--lan)"><small>المصدر المسموح</small><b>10.10.10.10</b><span>MGMT_NET — جهاز الإدارة</span></div>
     <div class="arr">←</div>
-    <div class="part" style="border-top:4px solid var(--lan)"><small>إلى أين؟</small><b>10.10.10.10/32</b><span>خادم واحد محدد</span></div>
+    <div class="part" style="border-top:4px solid var(--opt)"><small>الوجهة المسموحة</small><b>10.10.20.20</b><span>USER_NET — جهاز المستخدم</span></div>
     <div class="arr">←</div>
-    <div class="part" style="border-top:4px solid var(--fw)"><small>ماذا؟</small><b>TCP / 22</b><span>خدمة SSH وحدها</span></div>
+    <div class="part" style="border-top:4px solid var(--fw)"><small>الخدمة</small><b>TCP / 22</b><span>SSH فقط</span></div>
   </div>
   <div class="cmp">
-    <div class="panel rv" style="--k:var(--block)"><h3>قاعدة واسعة (ما تجنّبناه)</h3><code>OPT1 net → LAN net : any</code><p>أي جهاز يُخترق في OPT1 يصل إلى كل خدمة في LAN.</p></div>
-    <div class="panel rv" style="--k:var(--pass)"><h3>قاعدة دقيقة (ما طبّقناه)</h3><code>10.10.20.20 → 10.10.10.10 : 22</code><p>حتى لو اخترق المهاجم جهازاً آخر في OPT1، لن تنطبق عليه القاعدة.</p></div>
+    <div class="panel rv" style="--k:var(--fw)"><h3>أولاً: الاختبار المبدئي</h3><code>MGMT_NET ↔ USER_NET : SSH/22</code><p>نجح تسجيل الدخول في الاتجاهين. الغرض اختبار الاتصال، وليس إعلان هذه سياسة الوصول النهائية.</p></div>
+    <div class="panel rv" style="--k:var(--pass)"><h3>ثانياً: السياسة النهائية</h3><code>MGMT → USER : Pass  |  USER → MGMT : Block</code><p>أُلغي سماح المستخدم إلى الإدارة، مع السماح بردود الجلسات التي بدأتها الإدارة عبر Stateful Firewall.</p></div>
   </div>
   <div class="grid2">
-    <div class="why rv"><img data-i="stop" alt=""><div><b class="q">ولماذا منعنا Ping؟</b><p>لأن <span class="en">Ping</span> أول خطوة استطلاع؛ المهاجم يمسح الشبكة ليعرف أي الأجهزة تعمل. منعه بين المناطق يُخفي الأجهزة عن هذا المسح.</p></div></div>
-    <div class="why rv"><img data-i="magnifier" alt=""><div><b class="q">حدود هذا الاختبار</b><p>نجاح SSH ومنع Ping لا يثبتان وحدهما أن كل المنافذ الأخرى محجوبة؛ ذلك يحتاج فحصاً لبقية المنافذ.</p></div></div>
+    <div class="why rv"><img data-i="stop" alt=""><div><b class="q">لماذا المنع في اتجاه واحد؟</b><p>لأن مسؤول الإدارة يحتاج الوصول لأجهزة المستخدمين عند الدعم، بينما المستخدم لا يحتاج الوصول لخوادم الإدارة.</p></div></div>
+    <div class="why rv"><img data-i="magnifier" alt=""><div><b class="q">كيف نثبت أن المنع من الجدار الناري؟</b><p>ننفّذ nc/ssh من USER_NET، ونتحقق من TCP/22 في Live View مع عنوانَي المصدر والوجهة وإجراء Block.</p></div></div>
   </div>
 </section>
 <!-- 10 TESTS -->
 <section class="slide" data-title="الاختبارات والنتائج">
-  <header class="sh rv"><span class="orb" style="--k:var(--lan)"><img data-i="testtube" alt=""></span><div><span class="phase">المرحلة 6</span><h2>الاختبارات والنتائج</h2><p class="lead">كل نتيجة موثّقة بلقطة من الطرفية وبالسجل الحي في <span class="m">Firewall › Log Files › Live View</span>.</p></div></header>
+  <header class="sh rv"><span class="orb" style="--k:var(--lan)"><img data-i="testtube" alt=""></span><div><span class="phase">المرحلة 6</span><h2>الاختبارات والنتائج</h2><p class="lead">النتائج القديمة تُظهر مرحلة الاختبار الأولى؛ نتيجة المنع النهائي تُراجع بصورة الطرفية وسجل <span class="m">Firewall › Log Files › Live View</span>.</p></div></header>
   <table class="tests rv">
     <tr><th>الاختبار</th><th>الأمر</th><th>النتيجة</th></tr>
-    <tr><td>LAN إلى الإنترنت</td><td><code>curl -I https://example.org</code></td><td><span class="res ok"><img data-i="check" alt="">HTTP 200</span></td></tr>
-    <tr><td>OPT1 إلى الإنترنت</td><td><code>curl -I https://example.org</code></td><td><span class="res ok"><img data-i="check" alt="">HTTP 200</span></td></tr>
-    <tr><td>SSH من OPT1 إلى LAN</td><td><code>nc -vz -w 3 10.10.10.10 22 ; ssh</code></td><td><span class="res ok"><img data-i="check" alt="">اتصال وتسجيل دخول</span></td></tr>
-    <tr><td>SSH من LAN إلى OPT1</td><td><code>nc -vz -w 3 10.10.20.20 22 ; ssh</code></td><td><span class="res ok"><img data-i="check" alt="">اتصال وتسجيل دخول</span></td></tr>
-    <tr><td>Ping من OPT1 إلى LAN</td><td><code>ping -c 4 10.10.10.10</code></td><td><span class="res no"><img data-i="cross" alt="">فقدان 100% وسجل Block</span></td></tr>
-    <tr><td>Ping من LAN إلى OPT1</td><td><code>ping -c 4 10.10.20.20</code></td><td><span class="res no"><img data-i="cross" alt="">فقدان 100% من الحزم</span></td></tr>
+    <tr><td>MGMT_NET إلى الإنترنت</td><td><code>curl -I https://example.org</code></td><td><span class="res ok"><img data-i="check" alt="">HTTP 200</span></td></tr>
+    <tr><td>USER_NET إلى الإنترنت</td><td><code>curl -I https://example.org</code></td><td><span class="res ok"><img data-i="check" alt="">HTTP 200</span></td></tr>
+    <tr><td>USER → MGMT (المرحلة الأولى)</td><td><code>nc -vz -w 3 10.10.10.10 22 ; ssh</code></td><td><span class="res ok"><img data-i="check" alt="">نجح قبل تعديل القاعدة</span></td></tr>
+    <tr><td>USER → MGMT (السياسة النهائية)</td><td><code>nc -vz -w 3 10.10.10.10 22</code></td><td><span class="res no"><img data-i="cross" alt="">منع SSH — أضف دليل Live View</span></td></tr>
+    <tr><td>SSH من MGMT_NET إلى USER_NET</td><td><code>nc -vz -w 3 10.10.20.20 22 ; ssh</code></td><td><span class="res ok"><img data-i="check" alt="">اتصال وتسجيل دخول</span></td></tr>
+    <tr><td>Ping من USER_NET إلى MGMT_NET</td><td><code>ping -c 4 10.10.10.10</code></td><td><span class="res no"><img data-i="cross" alt="">فقدان 100% وسجل Block</span></td></tr>
+    <tr><td>Ping من MGMT إلى USER</td><td><code>ping -c 4 10.10.20.20</code></td><td><span class="res no"><img data-i="cross" alt="">فقدان 100% من الحزم</span></td></tr>
   </table>
   <div class="why rv"><img data-i="bulb" alt=""><div><b class="q">لماذا <span class="en">nc</span> قبل <span class="en">ssh</span>؟</b><p><span class="m">nc</span> يختبر فقط هل المنفذ مفتوح عبر الجدار الناري. بهذا نفصل «مشكلة شبكة» عن «مشكلة كلمة مرور»، ونعرف بالضبط أين الخلل إن فشل الاتصال.</p></div></div>
 </section>
 
 <!-- 11 SURICATA IPS -->
-<section class="slide" data-title="Suricata IPS">
-  <header class="sh rv"><span class="orb" style="--k:var(--fw)"><img data-i="a_zap" alt=""></span><div><span class="phase">المرحلة 7</span><h2>Suricata: يرى ما لا يراه الجدار الناري، ويوقفه</h2><p class="lead">يعمل بوضع المنع (<span class="en">IPS</span>) عبر <span class="en">Netmap</span> على واجهة <span class="m">KALI_NET</span>، بقواعد <span class="en">Emerging Threats</span> و<span class="en">GPL Scan</span> (أكثر من 28 ألف توقيع).</p></div></header>
+<section class="slide" data-title="Suricata IDS ثم IPS">
+  <header class="sh rv"><span class="orb" style="--k:var(--fw)"><img data-i="a_zap" alt=""></span><div><span class="phase">المرحلة 7 — تجربتان متتاليتان</span><h2>Suricata: من الكشف IDS إلى المنع IPS</h2><p class="lead">جرّبت الكشف والتنبيه في وضع IDS أولاً، وبعد التأكد من عمل التواقيع انتقلت إلى Netmap IPS لتفعيل المنع لقواعد محددة على ATTACK_LAB.</p></div></header>
   <div class="lens">
-    <div class="panel rv"><span class="orb sm" style="--k:var(--fw)"><img data-i="brick" alt=""></span><div><h3>الجدار الناري يقرأ «الظرف»</h3><p>المصدر والوجهة والمنفذ. إن كانت الحركة مسموحة، يمرّرها دون أن يعرف ما بداخلها.</p></div></div>
-    <div class="panel rv"><span class="orb sm" style="--k:var(--opt)"><img data-i="magnifier" alt=""></span><div><h3>IPS يقرأ «الرسالة»</h3><p>يطابق الحزم مع التواقيع، فيتعرّف على فحص <span class="en">Nmap</span> ويُسقطه حتى لو كان المنفذ مسموحاً.</p></div></div>
+    <div class="panel rv"><span class="orb sm" style="--k:var(--opt)"><img data-i="eye" alt=""></span><div><h3>1 — IDS: رصد وتنبيه</h3><p>تحليل حركة الاختبار من Kali والتعرف على توقيعات الفحص وتسجيل Alert، دون إسقاط الحزم بواسطة IDS.</p></div></div>
+    <div class="panel rv"><span class="orb sm" style="--k:var(--fw)"><img data-i="stop" alt=""></span><div><h3>2 — IPS: منع محدد</h3><p>بعد نجاح الكشف، تفعيل Netmap وقواعد Block المختارة؛ أصبحت سجلات Suricata تعرض الإجراء blocked.</p></div></div>
   </div>
   <div class="row">
     <div class="alertcard rv grow">
       <div class="top"><img data-i="siren" alt=""><b>GPL SCAN PING NMAP</b><span class="drop">blocked</span></div>
       <dl>
-        <dt>رقم التوقيع</dt><dd>SID 2100469</dd>
+        <dt>مثال توقيع</dt><dd>GPL Scan</dd>
         <dt>المصدر</dt><dd>10.10.30.10 (Kali)</dd>
-        <dt>الوجهة</dt><dd>10.10.10.10 (Debian-LAN)</dd>
-        <dt>الواجهة والوقت</dt><dd>KALI_NET · 2026-11-02 19:28</dd>
+        <dt>الوجهة</dt><dd>10.10.10.10 (Debian-MGMT)</dd>
+        <dt>واجهة المراقبة</dt><dd>ATTACK_LAB (em3)</dd>
       </dl>
     </div>
     <div class="col grow">
-      <div class="why rv"><img data-i="stop" alt=""><div><b class="q">لماذا IPS وليس IDS فقط؟</b><p>IDS ينبّه بعد أن تمر الحزمة. أما IPS فيقف في مسارها: يستلمها قبل تمريرها، فإن طابقت توقيعاً أسقطها.</p></div></div>
-      <div class="why rv"><img data-i="bell" alt=""><div><b class="q">لماذا على KALI_NET فقط؟</b><p>الإنذار الكاذب في IPS يعني قطع اتصال مشروع؛ لذلك طُبّق على واجهة المهاجم وحدها، لا على الشبكات الداخلية.</p></div></div>
+      <div class="why rv"><img data-i="magnifier" alt=""><div><b class="q">لماذا بدأنا بـ IDS؟</b><p>للتحقق من التوقيعات والتنبيهات قبل تطبيق المنع، وتقليل احتمال قطع اتصال سليم بسبب تنبيه كاذب.</p></div></div>
+      <div class="why rv"><img data-i="warning" alt=""><div><b class="q">ما الدليل الذي يُكمل تجربة IPS؟</b><p>صورة إعداد Netmap، وسجل blocked، ومحاولة متزامنة تثبت أن الحزمة مُنعت فعلاً، لا مجرد ظهور تنبيه.</p></div></div>
     </div>
   </div>
 </section>
-
 <!-- 13 OPENCANARY -->
 <section class="slide spread" data-title="OpenCanary">
-  <header class="sh rv"><span class="orb" style="--k:var(--kali)"><img data-i="honey" alt=""></span><div><span class="phase">المرحلة 8</span><h2>OpenCanary: مصيدة تكشف المتسلل بمجرد أن يلمسها</h2><p class="lead">خدمات وهمية على <span class="m">Debian-LAN</span>: SSH على المنفذ <span class="m">2222</span> وFTP على المنفذ <span class="m">21</span>، تعمل داخل بيئة Python معزولة.</p></div></header>
+  <header class="sh rv"><span class="orb" style="--k:var(--kali)"><img data-i="honey" alt=""></span><div><span class="phase">المرحلة 8</span><h2>OpenCanary: مصيدة تكشف المتسلل بمجرد أن يلمسها</h2><p class="lead">خدمات وهمية على <span class="m">Debian-MGMT</span>: SSH على المنفذ <span class="m">2222</span> وFTP على المنفذ <span class="m">21</span>، تعمل داخل بيئة Python معزولة.</p></div></header>
   <div class="row">
     <div class="panel rv" style="flex:1">
       <h3 style="margin-bottom:12px">ما الذي حدث في الاختبار؟</h3>
@@ -626,8 +627,8 @@ p,li{font-size:23px;line-height:1.75}
     </div>
   </div>
   <div class="grid2">
-    <div class="why rv"><img data-i="bulb" alt=""><div><b class="q">لماذا مصيدة؟</b><p>لا يوجد مستخدم شرعي له سبب للاتصال بخدمة وهمية؛ فكل اتصال بها مشبوه بالتعريف، والإنذارات الكاذبة شبه معدومة.</p></div></div>
-    <div class="why rv"><img data-i="question" alt=""><div><b class="q">لماذا المنفذ 2222 وليس 22؟</b><p>لأن المنفذ 22 يشغله SSH الحقيقي الذي سمحنا به بين الشبكتين؛ فالمصيدة تعمل بجانبه دون أن تتعارض معه.</p></div></div>
+    <div class="why rv"><img data-i="bulb" alt=""><div><b class="q">لماذا مصيدة؟</b><p>الوصول لخدمة وهمية مؤشر يستحق التحقيق. المصيدة تسجّل المحاولة ولا تنفّذ حظراً آلياً في هذا المختبر.</p></div></div>
+    <div class="why rv"><img data-i="question" alt=""><div><b class="q">لماذا المنفذ 2222 وليس 22؟</b><p>لأن المنفذ 22 مخصص لـ SSH الحقيقي؛ تُتاح من ATTACK_LAB إلى المصيدة قاعدة ضيقة على TCP/2222 فقط.</p></div></div>
   </div>
 </section>
 <!-- 11 PROBLEMS -->
@@ -637,8 +638,8 @@ p,li{font-size:23px;line-height:1.75}
     <div class="h">المشكلة</div><div class="h">التشخيص</div><div class="h">الحل</div>
     <div>عنوان <span class="m">169.254.x.x</span> على OPT1</div><div><span class="en">DHCP Discover</span> يصل ولا يصدر <span class="en">Offer</span></div><div>إضافة <span class="m">em1</span> إلى Dnsmasq</div>
     <div>تعذّر تثبيت <span class="m">curl</span></div><div><span class="m">Temporary failure resolving deb.debian.org</span></div><div>إصلاح DNS والاتصال بالإنترنت، ثم التثبيت</div>
-    <div>فشل SSH بين الشبكتين</div><div><span class="m">TCP/22</span> محجوب في Live View</div><div>رفع قاعدة Pass فوق قاعدة Block</div>
-    <div>فشل HTTPS إلى واجهة الإدارة من OPT1</div><div>حجب محاولات <span class="m">TCP/443</span></div><div>سلوك مقصود يتوافق مع سياسة العزل</div>
+    <div>فشل SSH أثناء الاختبار الأول</div><div><span class="m">TCP/22</span> محجوب في Live View</div><div>تقديم قاعدة Pass مؤقتاً للتحقق؛ ثم إلغاء سماح USER → MGMT في السياسة النهائية</div>
+    <div>فشل HTTPS إلى واجهة الإدارة من USER_NET</div><div>حجب محاولات <span class="m">TCP/443</span></div><div>سلوك مقصود يتوافق مع سياسة العزل</div>
     <div>ظهور <span class="m">HTTP 403</span> من OPNsense</div><div>الخادم استجاب لكنه رفض الطلب</div><div>403 لا تعني انقطاع الشبكة</div>
   </div>
   <div class="method rv"><b style="font-family:Readex Pro">المنهج المتّبع:</b><span>العَرَض</span><i>←</i><span>السجلات</span><i>←</i><span>السبب</span><i>←</i><span>الحل</span><i>←</i><span>إعادة الاختبار</span></div>
@@ -674,10 +675,10 @@ p,li{font-size:23px;line-height:1.75}
   <header class="sh rv"><span class="orb" style="--k:var(--pass)"><img data-i="trophy" alt=""></span><div><h2>ما الذي زاد عن مجرد جدار ناري؟</h2><p class="lead">المطلوب الأساسي كان العزل والقواعد. ما بُني فوقه جعل المختبر دفاعاً متعدد الطبقات.</p></div></header>
   <div class="layers rv">
     <img class="walker" data-i="a_ninja" alt="">
-    <div class="layer" style="--k:var(--opt)"><div class="disc"><img data-i="puzzle" alt=""></div><span class="n">الطبقة 1</span><h3>التجزئة</h3><p>Kali في منطقة مستقلة، ولا يرى الشبكات الداخلية مباشرة.</p></div>
+    <div class="layer" style="--k:var(--opt)"><div class="disc"><img data-i="puzzle" alt=""></div><span class="n">الطبقة 1</span><h3>التجزئة</h3><p>Kali في منطقة اختبار منفصلة، ويُسمح له فقط بمسارات الاختبار المحددة، ومنها منفذ المصيدة.</p></div>
     <div class="layer" style="--k:var(--fw)"><div class="disc"><img data-i="brick" alt=""></div><span class="n">الطبقة 2</span><h3>الجدار الناري</h3><p>كل حزمة تُقارن بالقواعد، والمرفوض يُمنع ويُسجّل.</p></div>
     <div class="layer" style="--k:var(--lan)"><div class="disc"><img data-i="a_zap" alt=""></div><span class="n">الطبقة 3</span><h3>Suricata IPS</h3><p>ما يمر من القواعد يُفحص، والفحص بـ Nmap يُسقط.</p></div>
-    <div class="layer" style="--k:var(--kali)"><div class="disc"><img data-i="honey" alt=""></div><span class="n">الطبقة 4</span><h3>المصيدة</h3><p>من يصل ويحاول الدخول يُسجَّل اسمه وكلمة مروره.</p></div>
+    <div class="layer" style="--k:var(--kali)"><div class="disc"><img data-i="honey" alt=""></div><span class="n">الطبقة 4</span><h3>المصيدة</h3><p>تُسجّل محاولات الوصول، ولا يوجد حظر تلقائي من OpenCanary حالياً.</p></div>
   </div>
   <div class="extras rv">
     <span><img data-i="check" alt="">منع فعلي بـ IPS، لا تنبيه فقط</span>
@@ -692,7 +693,7 @@ p,li{font-size:23px;line-height:1.75}
   <header class="sh rv"><span class="orb" style="--k:var(--opt)"><img data-i="a_rocket" alt=""></span><div><h2>ما الذي كان يمكن أن أضيفه؟</h2><p class="lead">خطوات تنقل المختبر من «يعمل» إلى «جاهز لبيئة حقيقية».</p></div></header>
   <div class="future">
     <div class="panel rv" style="--k:var(--opt)"><span class="orb sm"><img data-i="chartup" alt=""></span><div><h3>نظام SIEM مركزي</h3><p>Wazuh يجمع سجلات OPNsense وSuricata وOpenCanary في لوحة واحدة. استُبعد بسبب ذاكرة الجهاز (16 GB).</p></div></div>
-    <div class="panel rv" style="--k:var(--kali)"><span class="orb sm"><img data-i="link" alt=""></span><div><h3>ربط المصيدة بالحظر</h3><p>من يلمس OpenCanary يُحظر عنوانه تلقائياً على الجدار الناري.</p></div></div>
+    <div class="panel rv" style="--k:var(--kali)"><span class="orb sm"><img data-i="link" alt=""></span><div><h3>ربط المصيدة بالحظر</h3><p>مستقبلاً: ربط سجلات OpenCanary بأتمتة حظر مدروسة على الجدار الناري.</p></div></div>
     <div class="panel rv" style="--k:var(--lan)"><span class="orb sm"><img data-i="magnifier" alt=""></span><div><h3>فحص شامل للمنافذ</h3><p>Nmap لكل المنافذ من كل منطقة، لإثبات أن العزل كامل لا لـ SSH وPing فقط.</p></div></div>
     <div class="panel rv" style="--k:var(--fw)"><span class="orb sm"><img data-i="locked" alt=""></span><div><h3>VPN للإدارة</h3><p>WireGuard على OPNsense، فتكون الإدارة عن بعد عبر نفق مشفّر.</p></div></div>
     <div class="panel rv" style="--k:var(--pass)"><span class="orb sm"><img data-i="plug" alt=""></span><div><h3>شبكة فعلية</h3><p>تطبيق المناطق كـ VLAN على محوّل حقيقي، وحجز العناوين داخل DHCP.</p></div></div>
@@ -834,11 +835,12 @@ document.querySelectorAll('[data-i]').forEach(e=>{const v=ICONS[e.dataset.i];if(
     await tween(c,P.fw,P[to],T);hit(to);c.remove();
   }
   const S={
-    async ssh(){log('info','SYN','10.10.10.10 → 10.10.20.20  TCP/22');await send('lan','opt','--pass','pass');log('pass','PASS','rule "Allow LAN1 OPT1 SSH"');await send('opt','lan','--pass','pass');log('pass','STATE','reply allowed by state table')},
-    async ping(){for(let i=1;i<=2;i++){log('info','ICMP','10.10.20.20 → 10.10.10.10  echo seq='+i);await send('opt','lan','--block','block');log('block','BLOCK','rule "block opt01 to lan-log"  logged')}log('block','RESULT','100% packet loss')},
+    async ssh(){log('info','SYN','10.10.10.10 → 10.10.20.20  TCP/22');await send('lan','opt','--pass','pass');log('pass','PASS','rule "Allow MGMT to USER SSH"');await send('opt','lan','--pass','pass');log('pass','STATE','reply allowed by state table')},
+    async sshblock(){log('info','SYN','10.10.20.20 → 10.10.10.10  TCP/22  (final policy)');await send('opt','lan','--block','block');log('block','BLOCK','USER_NET → MGMT_NET  TCP/22  (illustration; verify Live View)')},
+    async ping(){for(let i=1;i<=2;i++){log('info','ICMP','10.10.20.20 → 10.10.10.10  echo seq='+i);await send('opt','lan','--block','block');log('block','BLOCK','USER_NET → MGMT_NET  logged')}log('block','RESULT','100% packet loss')},
     async web(){log('info','SYN','10.10.10.10 → example.org  TCP/443');await send('lan','wan','--opt','pass');log('pass','PASS','rule "Allow LAN to HTTPS"  NAT via em2');await send('wan','lan','--opt','pass');log('pass','HTTP','200 OK')},
-    async nmap(){log('info','SCAN','nmap -sn  10.10.30.10 → 10.10.10.0/24');eye.classList.add('on');for(let i=0;i<3;i++){send('kali','lan','--fw','block');await wait(T*.55)}await wait(T*1.4);log('alert','ALERT','GPL SCAN PING NMAP  SID 2100469');log('block','IPS','action=blocked  iface KALI_NET  (Netmap inline)');eye.classList.remove('on')},
-    async canary(){log('info','SYN','10.10.30.10 → 10.10.10.10  TCP/2222');await send('kali','lan','--kali','pass');canary.classList.add('on');log('canary','CANARY','SSH login attempt  user=baya3');await send('lan','kali','--kali','pass');log('block','DENY','Permission denied  →  /var/tmp/opencanary.log');canary.classList.remove('on')}
+    async nmap(){log('info','SCAN','nmap -sn  10.10.30.10 → 10.10.10.0/24');eye.classList.add('on');for(let i=0;i<3;i++){send('kali','lan','--fw','block');await wait(T*.55)}await wait(T*1.4);log('alert','ALERT','GPL SCAN PING NMAP  SID 2100469');log('block','IPS','action=blocked  iface ATTACK_LAB  (Netmap inline)');eye.classList.remove('on')},
+    async canary(){log('info','SYN','10.10.30.10 → 10.10.10.10  TCP/2222');await send('kali','lan','--kali','pass');canary.classList.add('on');log('canary','CANARY','SSH login attempt  user=baya3');await send('lan','kali','--kali','pass');log('canary','LOGIN','Authentication rejected; logged → /var/tmp/opencanary.log (no auto-ban)');canary.classList.remove('on')}
   };
   const btns=[...document.querySelectorAll('#scen button')];
   btns.forEach(b=>b.onclick=async()=>{btns.forEach(x=>x.disabled=true);try{await S[b.dataset.s]()}finally{btns.forEach(x=>x.disabled=false)}});
